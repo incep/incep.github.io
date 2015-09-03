@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>Gitlab Nihongoka</title>
+</head>
+<body>
+  <header>
+  <div>2015-09-03T00:00:00+09:00</div>
+  <h1>Gitlab Nihongoka</h1>
+</header>
+
+<div class='main'>
+  <h1 id="gitlabmediaenghokudaiacjp-">GitLab.media.eng.hokudai.ac.jp の日本語化</h1>
+
+<p>150810</p>
+
+<h2 id="url">参考URL</h2>
+<p>http://qiita.com/ksoichiro/items/f63196aa0a7f07c1862d
+https://github.com/ksoichiro/gitlab-i18n-patch</p>
+
+<h2 id="section">現状</h2>
+<p>原稿のバージョンは GitLab 7.10.1 で，対応する日本語パッチはない．
+7.10.0 用のパッチを上記サイトの手順通りに適用してみると表示が崩れた．</p>
+
+<p><code>sh
+# cd /opt/gitlab/embedded/service/gitlab-rails
+# patch -R -p1 &lt; ~/app_ja.patch
+</code></p>
+
+<p>としてリバースパッチし，もう一度プレコンパイル，すなわち</p>
+
+<p><code>sh
+# cd /opt/gitlab/embedded/service/gitlab-rails
+# rm -rf public/assets
+# export PATH=/opt/gitlab/embedded/bin:$PATH
+# bundle exec rake assets:precompile RAILS_ENV=production
+</code></p>
+
+<p>を実行すると直った．</p>
+
+<p>上記の操作は，今そこに走っている実環境に対して直接手を加えてしまったものであり，後悔．
+リバースパッチに失敗していたらどうなっていたか．
+そのための安全線が「Vagrantで試す」ことであるようだ．
+Vagrantは，VirtualBox などの仮想化ソフトを操って．即席のテスト用仮想化環境を構築してくれる．
+パッチを本当に当ててしまう前に，まずはテスト環境を立ち上げて結果を確かめてみたほうがいいという考え方．実は当たり前なことかもなあ．</p>
+
+<p>Vagrant の操作方法は，パッチのレポジトリの README.md
+https://github.com/ksoichiro/gitlab-i18n-patch
+にも書いてあったが，ちょっとよくわからなかった．</p>
+
+<p>結局，日本語化するには，GitLabに対し日本語化パッチが対応しているバージョンへのアップグレードが必要なようだ．</p>
+
+<p>GitLabのアップグレードの手順を調べてみると，
+http://doc.gitlab.com/omnibus/update/README.html#updating-from-gitlab-66-and-hgitlab-ctligher-to-the-latest-version
+gitlab-ctl コマンドを用いて行うことができるようだ．</p>
+
+<p>ただ，手順としては，</p>
+
+<ul>
+  <li>Stop all GitLab services;</li>
+  <li>Create a backup using your current, old GitLab version. This is a ‘light’ backup that only backs up the SQL database;</li>
+  <li>Run gitlab-ctl reconfigure, which will perform any necessary database migrations (using the new GitLab version);</li>
+  <li>Restart the services that were running when the upgrade script was invoked.</li>
+</ul>
+
+<p>と，ちょっとデータベース周りの手間の掛かる作業が必要な雰囲気なので，今日はここでやめにした．</p>
+
+
+</div>
+
+<footer>
+  <p>- rendered with post template -</p>
+</footer>
+
+  <p>- rendered with layout template -</p>
+</body>
